@@ -26,7 +26,7 @@ export class Game {
     this.H = 640; this.top = 78; this.bottomPad = 70;
     this.phase = 'menu';
     this.t = 0;
-    this.particles = []; this.texts = []; this.bolts = [];
+    this.particles = []; this.texts = []; this.bolts = []; this.banner = null;
     this.shake = 0; this.flash = 0;
     this.ambient = Array.from({ length: 14 }, (_, i) => ({ x: (i * 53) % W, y: (i * 97) % 600, vx: 40 + (i % 5) * 18, vy: 60 + (i % 4) * 22, r: 3 + (i % 3) }));
     this.aim = null; this.aiming = false;
@@ -72,7 +72,7 @@ export class Game {
     this.shield = up.net;
     this.bricks = []; this.balls_live = []; this.particles = []; this.texts = []; this.bolts = [];
     this.runCoins = 0; this.runBricks = 0; this.runPickups = 0; this.bossKills = 0; this.odUses = 0; this.revives = 0;
-    this.combo = 0; this.od = 0; this.odArmed = false;
+    this.combo = 0; this.od = 0; this.odArmed = false; this.banner = null; this.bestCombo = 0;
     this.lx = W / 2; this.nextLx = null;
     this.speed = 1; this.fireTime = 0;
     for (let i = 0; i < up.head; i++) this.grantPerk(this.randomPerks(1)[0]);
@@ -205,6 +205,7 @@ export class Game {
     this.t += dt;
     this.shake = Math.max(0, this.shake - dt * 30);
     this.flash = Math.max(0, this.flash - dt * 2);
+    if (this.banner) { this.banner.life -= dt; if (this.banner.life <= 0) this.banner = null; }
     if (this.phase === 'fire') this.updateFire(dt * this.speed);
     else if (this.phase === 'descend') this.updateDescend(dt);
     if (this.phase === 'menu') this.updateAmbient(dt);
@@ -318,7 +319,8 @@ export class Game {
   }
 
   hitBrick(k, b) {
-    this.combo++;
+    this.combo++; if (this.combo > this.bestCombo) this.bestCombo = this.combo;
+    if (this.combo === 25 || this.combo === 50 || this.combo === 100) { this.text(W / 2, this.top + 120, 'COMBO x' + this.combo + '!', '#ffe066'); this.shake = Math.max(this.shake, 4); }
     this.od = Math.min(OD_MAX, this.od + (this.volleyOD ? 0 : 1));
     Sfx.hit(this.combo);
     let dmg = b.dmg;
@@ -403,6 +405,8 @@ export class Game {
     this.spawnRow();
     // uncollected pickups that fall off the bottom just vanish
     this.bricks = this.bricks.filter(b => !((b.type === 'ball' || b.type === 'coin') && b.r >= this.rows));
+    if (this.level % 10 === 0) this.showBanner('⚠ BOSS INCOMING', '#ff3d7f');
+    else if (this.level % 5 === 1 && this.level > 1) this.showBanner('LEVEL ' + this.level, '#38e8ff');
     this.hooks.level && this.hooks.level(this.level);
   }
 
@@ -457,10 +461,11 @@ export class Game {
     const up = Save.d.upgrades;
     const base = this.runCoins + Math.floor(this.level * 1.5);
     const coins = Math.round(base * (1 + 0.12 * up.coin));
-    return { level: this.level, coins, bricks: this.runBricks, pickups: this.runPickups, boss: this.bossKills, od: this.odUses, mode: this.mode, revives: this.revives };
+    return { level: this.level, coins, bricks: this.runBricks, pickups: this.runPickups, boss: this.bossKills, od: this.odUses, combo: this.bestCombo, mode: this.mode, revives: this.revives };
   }
 
   // ---------- fx helpers ----------
+  showBanner(s, color) { this.banner = { s, color, life: 1.6, max: 1.6 }; }
   burst(x, y, color, n, spd) {
     for (let i = 0; i < n; i++) {
       const a = Math.random() * 6.283, s = spd * (0.3 + Math.random() * 0.7);
@@ -583,6 +588,15 @@ export class Game {
     g.textAlign = 'center'; g.font = 'bold 13px system-ui, sans-serif';
     for (const t of this.texts) { g.globalAlpha = Math.min(1, t.life * 2.2); g.fillStyle = t.color; g.fillText(t.s, t.x, t.y); }
     g.globalAlpha = 1;
+    if (this.phase === 'fire' && this.combo >= 8) {
+      g.globalAlpha = 0.16; g.fillStyle = '#fff'; g.font = '900 96px system-ui, sans-serif'; g.textAlign = 'center';
+      g.fillText(this.combo, W / 2, this.top + (this.rows * CELL) / 2 + 30); g.globalAlpha = 1;
+    }
+    if (this.banner) {
+      const b = this.banner, k = b.life / b.max, a = Math.min(1, k * 3, (1 - k) * 6 + 0.2);
+      g.globalAlpha = Math.max(0, Math.min(1, a)); g.fillStyle = b.color; g.textAlign = 'center';
+      g.font = '900 34px system-ui, sans-serif'; g.fillText(b.s, W / 2, this.top + 70 + (1 - k) * -12); g.globalAlpha = 1;
+    }
     if (this.flash > 0) { g.fillStyle = `rgba(255,255,255,${this.flash * 0.5})`; g.fillRect(0, 0, W, this.H); }
   }
 

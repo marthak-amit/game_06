@@ -78,3 +78,9 @@ canvas{display:block;touch-action:none}
 #toast{position:absolute;left:50%;top:18%;transform:translate(-50%,-20px);background:#fff;color:#111;font-weight:800;padding:10px 18px;border-radius:20px;opacity:0;transition:.25s;pointer-events:none;z-index:60;white-space:nowrap}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (max-height:640px){.logo{font-size:46px}.logo .l2{font-size:50px}.big-num{font-size:56px}}
+
+.wheel-wrap{position:relative;width:240px;height:240px;margin:6px auto}
+.pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:26px;color:#fff;z-index:2;text-shadow:0 0 8px #000}
+#wheel{width:100%;height:100%;border-radius:50%;border:5px solid #fff;position:relative;transition:transform 4s cubic-bezier(.12,.7,.1,1);background:conic-gradient(#ff4fa3 0 45deg,#38e8ff 45deg 90deg,#ffd23d 90deg 135deg,#5be37a 135deg 180deg,#a98bff 180deg 225deg,#ff9f43 225deg 270deg,#2fd4c0 270deg 315deg,#ff5d73 315deg 360deg);box-shadow:0 0 30px #7a5cff66}
+#wheel b{position:absolute;left:50%;top:50%;width:0;height:0;color:#1a1033;font-weight:900;font-size:15px}
+#wheel b span{position:absolute;left:-20px;top:-100px;width:40px;text-align:center}

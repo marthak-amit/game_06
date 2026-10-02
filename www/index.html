@@ -37,6 +37,7 @@
     <div class="menu-row">
       <button id="btnShop" class="btn small">🛒 Shop</button>
       <button id="btnRewards" class="btn small">🎁 Rewards<i id="dotRewards" class="dot hidden"></i></button>
+      <button id="btnSpin" class="btn small">🎡 Spin<i id="dotSpin" class="dot hidden"></i></button>
       <button id="btnSettings" class="btn small">⚙️</button>
     </div>
   </section>
@@ -53,6 +54,15 @@
     <div class="panel">
       <div class="panel-head"><h2>Rewards</h2><button class="x" data-close>✕</button></div>
       <div id="rewardsBody" class="scroll"></div>
+    </div>
+  </section>
+
+  <section id="spin" class="screen">
+    <div class="panel small">
+      <div class="panel-head"><h2>Lucky Spin</h2><button class="x" data-close>✕</button></div>
+      <div class="wheel-wrap"><div class="pointer">▼</div><div id="wheel"></div></div>
+      <div class="muted" id="spinInfo"></div>
+      <button class="btn big gold" id="btnSpinGo">SPIN</button>
     </div>
   </section>
 
@@ -87,7 +97,7 @@
       <h2 id="oTitle">Vault Overflow!</h2>
       <div class="big-num" id="oLevel">0</div>
       <div class="muted" id="oMsg"></div>
-      <div class="over-stats"><div>Bricks<b id="oBricks">0</b></div><div>Best<b id="oBest">0</b></div><div>Coins<b id="oCoins">0</b></div></div>
+      <div class="over-stats"><div>Bricks<b id="oBricks">0</b></div><div>Combo<b id="oCombo">0</b></div><div>Best<b id="oBest">0</b></div><div>Coins<b id="oCoins">0</b></div></div>
       <button class="btn big gold" id="btnRevive">🎬 REVIVE · Watch ad</button>
       <button class="btn alt" id="btnDouble">🎬 DOUBLE COINS</button>
       <button class="btn big" id="btnAgain">PLAY AGAIN</button>

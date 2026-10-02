@@ -13,7 +13,7 @@ function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 1800);
 }
-const screens = ['menu', 'shop', 'rewards', 'settings', 'perk', 'pause', 'over'];
+const screens = ['menu', 'shop', 'rewards', 'spin', 'settings', 'perk', 'pause', 'over'];
 function show(id) { for (const s of screens) $(s).classList.toggle('show', s === id); }
 function hideAll() { show(null); }
 const fmt = n => n.toLocaleString('en-US');
@@ -65,6 +65,7 @@ const dailyAvailable = () => Save.d.daily.lastClaim !== today();
 function refreshMenu() {
   $('mBest').textContent = Save.d.best; $('mCoins').textContent = fmt(Save.d.coins);
   $('dotRewards').classList.toggle('hidden', !(dailyAvailable() || claimable()));
+  $('dotSpin').classList.toggle('hidden', !(spinState().used < 1));
   const dc = Save.d.dailyChallenge;
   $('btnDaily').textContent = dc.date === today() && dc.rewarded ? `📅 DAILY · best ${dc.best}` : '📅 DAILY CHALLENGE · +100🪙';
 }
@@ -170,7 +171,7 @@ function onOver(s) {
   const isBest = s.mode === 'normal' && s.level > prevBest;
   $('oTitle').textContent = isBest ? '🏆 NEW BEST!' : 'Vault Overflow!';
   $('oLevel').textContent = s.level;
-  $('oBricks').textContent = s.bricks; $('oBest').textContent = s.mode === 'daily' ? d.dailyChallenge.best : d.best; $('oCoins').textContent = '+' + s.coins;
+  $('oBricks').textContent = s.bricks; $('oCombo').textContent = s.combo; $('oBest').textContent = s.mode === 'daily' ? d.dailyChallenge.best : d.best; $('oCoins').textContent = '+' + s.coins;
   const gap = d.best - s.level;
   $('oMsg').textContent = extra + (isBest ? 'Incredible run!' : gap > 0 && gap <= 4 ? `So close! Only ${gap} level${gap > 1 ? 's' : ''} from your best.` : 'One more run?');
   $('btnRevive').classList.toggle('hidden', s.revives >= 1);
@@ -269,6 +270,57 @@ function renderRewards() {
     el.appendChild(b); body.appendChild(el);
   }
 }
+
+// ---------- lucky spin ----------
+const PRIZES = [50, 30, 100, 20, 250, 40, 75, 500];
+const WEIGHTS = [14, 22, 12, 22, 4, 16, 9, 1];
+function spinState() {
+  const d = Save.d;
+  if (!d.spin || d.spin.date !== today()) d.spin = { date: today(), used: 0 };
+  return d.spin;
+}
+let wheelRot = 0, spinning = false;
+function buildWheel() {
+  const w = $('wheel'); if (w.children.length) return;
+  PRIZES.forEach((p, i) => { const b = document.createElement('b'); b.style.transform = `rotate(${i * 45 + 22.5}deg)`; b.innerHTML = `<span>${p}</span>`; w.appendChild(b); });
+}
+function renderSpin() {
+  buildWheel();
+  const st = spinState(), left = 4 - st.used;
+  $('spinInfo').textContent = st.used === 0 ? 'Your free spin is ready!' : left > 0 ? `${left} bonus spin${left > 1 ? 's' : ''} left today (watch an ad)` : 'No spins left today — come back tomorrow';
+  const b = $('btnSpinGo'); b.disabled = spinning || left <= 0;
+  b.textContent = st.used === 0 ? 'SPIN FREE' : '🎬 WATCH AD · SPIN';
+}
+$('btnSpin').onclick = () => { btnSfx(); renderSpin(); show('spin'); };
+$('btnSpinGo').onclick = async () => {
+  const st = spinState(); if (spinning || st.used >= 4) return;
+  if (st.used > 0 && !(await Ads.showRewarded('spin'))) return toast('No ad available right now');
+  spinning = true; st.used++; Save.save(); $('btnSpinGo').disabled = true;
+  const tot = WEIGHTS.reduce((a, b) => a + b, 0); let r = Math.random() * tot, idx = 0;
+  while (idx < WEIGHTS.length - 1 && (r -= WEIGHTS[idx]) > 0) idx++;
+  const jitter = (Math.random() - 0.5) * 30;
+  wheelRot += 360 * 5 + (360 - (idx * 45 + 22.5)) - (wheelRot % 360) + jitter;
+  $('wheel').style.transform = `rotate(${wheelRot}deg)`;
+  const tick = setInterval(() => Sfx.click(), 180);
+  setTimeout(() => {
+    clearInterval(tick); spinning = false;
+    Save.addCoins(PRIZES[idx]); Sfx.win(); toast(`+${PRIZES[idx]} 🪙`); renderSpin(); refreshMenu();
+  }, 4100);
+};
+
+// ---------- back button (Android) ----------
+function onBack() {
+  const open = screens.find(s => $(s).classList.contains('show'));
+  if (open === 'menu' || !open) {
+    if (game.phase === 'aim' || game.phase === 'fire') { paused = true; show('pause'); }
+    return;
+  }
+  if (open === 'pause') { paused = false; hideAll(); }
+  else if (open === 'over') goMenu();
+  else if (open !== 'perk') { refreshMenu(); show('menu'); }
+}
+document.addEventListener('backbutton', onBack);
+try { const A = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App; A && A.addListener('backButton', onBack); } catch (e) { /* web */ }
 
 // ---------- settings ----------
 $('btnSettings').onclick = () => { btnSfx(); $('optSound').checked = Save.d.sound; $('optHaptics').checked = Save.d.haptics; show('settings'); };
