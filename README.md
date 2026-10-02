@@ -46,3 +46,8 @@ CI: `.github/workflows/android-debug.yml` builds a debug APK (Actions → Run wo
 
 ## Revenue reality check (₹10 lakh / month ≈ ₹33k/day ≈ $400/day)
 No game can guarantee this; it is a *user-acquisition + retention* outcome. Rough math: at ~$0.04 blended ARPDAU (ads + ~2% payers) you need ≈10k daily active users; at $0.08 about 5k. Plan: soft-launch in a few countries, watch D1 ≥ 40% / D7 ≥ 12%, tune with `scripts/sim.mjs`, then scale paid UA only while CPI < LTV.
+
+## Download
+- Debug APK (test AdMob ads): `apk/volley-vault-debug.apk` (also on branch `apk-builds`, rebuilt on every push by GitHub Actions).
+- Screenshots: `screenshots/`.
+- To use real ads: put your AdMob **app id** in `native/admob-app-id.txt` and your ad unit ids in `www/js/monetization.js`, push, and CI rebuilds.
