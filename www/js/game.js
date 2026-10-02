@@ -595,7 +595,7 @@ export class Game {
     if (this.banner) {
       const b = this.banner, k = b.life / b.max, a = Math.min(1, k * 3, (1 - k) * 6 + 0.2);
       g.globalAlpha = Math.max(0, Math.min(1, a)); g.fillStyle = b.color; g.textAlign = 'center';
-      g.font = '900 34px system-ui, sans-serif'; g.fillText(b.s, W / 2, this.top + 70 + (1 - k) * -12); g.globalAlpha = 1;
+      g.font = '900 28px system-ui, sans-serif'; g.fillText(b.s, W / 2, this.top + 70 + (1 - k) * -12); g.globalAlpha = 1;
     }
     if (this.flash > 0) { g.fillStyle = `rgba(255,255,255,${this.flash * 0.5})`; g.fillRect(0, 0, W, this.H); }
   }
