@@ -1,0 +1,8 @@
+{
+  "appId": "com.volleyvault.game",
+  "appName": "Volley Vault",
+  "webDir": "www",
+  "backgroundColor": "#0b0d24",
+  "android": { "allowMixedContent": false },
+  "plugins": { "SplashScreen": { "launchShowDuration": 0 } }
+}

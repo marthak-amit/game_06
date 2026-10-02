@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d24">
+<title>Volley Vault</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231b1450%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%2338e8ff%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="safe-probe"></div>
+<div id="stage">
+  <canvas id="c"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div class="hud-l"><div id="hLevel">LEVEL 1</div><div id="hBest">BEST 0</div></div>
+      <div class="hud-c"><div id="odBar"><i></i></div><div id="odLabel">OVERDRIVE</div></div>
+      <div class="hud-r"><span id="hCoins">🪙 0</span><button id="btnPause" aria-label="Pause">❚❚</button></div>
+    </div>
+    <div id="perkRow"></div>
+    <button id="btnOD" class="hidden">🔥 OVERDRIVE</button>
+    <div class="hud-bottom">
+      <button id="btnRecall" class="round hidden" aria-label="Recall">⤓</button>
+      <button id="btnFF" class="round hidden" aria-label="Fast forward">⏩</button>
+    </div>
+    <div id="hint" class="hidden">Drag to aim · release to fire</div>
+  </div>
+
+  <section id="menu" class="screen show">
+    <div class="logo"><span>VOLLEY</span><span class="l2">VAULT</span></div>
+    <div class="tag">Aim. Volley. Break the vault.</div>
+    <div class="stats"><div>BEST <b id="mBest">0</b></div><div>🪙 <b id="mCoins">0</b></div></div>
+    <button id="btnPlay" class="btn big">PLAY</button>
+    <button id="btnDaily" class="btn alt">📅 DAILY CHALLENGE</button>
+    <div class="menu-row">
+      <button id="btnShop" class="btn small">🛒 Shop</button>
+      <button id="btnRewards" class="btn small">🎁 Rewards<i id="dotRewards" class="dot hidden"></i></button>
+      <button id="btnSettings" class="btn small">⚙️</button>
+    </div>
+  </section>
+
+  <section id="shop" class="screen">
+    <div class="panel">
+      <div class="panel-head"><h2>Shop</h2><span id="sCoins" class="coins"></span><button class="x" data-close>✕</button></div>
+      <div class="tabs"><button data-tab="up" class="on">Upgrades</button><button data-tab="skins">Balls</button><button data-tab="store">Store</button></div>
+      <div id="shopBody" class="scroll"></div>
+    </div>
+  </section>
+
+  <section id="rewards" class="screen">
+    <div class="panel">
+      <div class="panel-head"><h2>Rewards</h2><button class="x" data-close>✕</button></div>
+      <div id="rewardsBody" class="scroll"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="screen">
+    <div class="panel small">
+      <div class="panel-head"><h2>Settings</h2><button class="x" data-close>✕</button></div>
+      <label class="row"><span>Sound</span><input type="checkbox" id="optSound"></label>
+      <label class="row"><span>Vibration</span><input type="checkbox" id="optHaptics"></label>
+      <button class="btn small" id="btnRestore">Restore purchases</button>
+      <p class="muted">Volley Vault v1.0</p>
+    </div>
+  </section>
+
+  <section id="perk" class="screen">
+    <div class="panel">
+      <div class="panel-head"><h2>Choose a perk</h2></div>
+      <div id="perkChoices"></div>
+      <button class="btn alt" id="btnReroll">🎬 Watch ad · Reroll</button>
+    </div>
+  </section>
+
+  <section id="pause" class="screen">
+    <div class="panel small">
+      <h2>Paused</h2>
+      <button class="btn big" id="btnResume">RESUME</button>
+      <button class="btn small" id="btnQuit">Quit run</button>
+    </div>
+  </section>
+
+  <section id="over" class="screen">
+    <div class="panel">
+      <h2 id="oTitle">Vault Overflow!</h2>
+      <div class="big-num" id="oLevel">0</div>
+      <div class="muted" id="oMsg"></div>
+      <div class="over-stats"><div>Bricks<b id="oBricks">0</b></div><div>Best<b id="oBest">0</b></div><div>Coins<b id="oCoins">0</b></div></div>
+      <button class="btn big gold" id="btnRevive">🎬 REVIVE · Watch ad</button>
+      <button class="btn alt" id="btnDouble">🎬 DOUBLE COINS</button>
+      <button class="btn big" id="btnAgain">PLAY AGAIN</button>
+      <button class="btn small" id="btnHome">Home</button>
+    </div>
+  </section>
+
+  <div id="adOverlay"><div class="ad-box"><div class="ad-title"></div><div class="ad-count">3</div><p>This is a placeholder. Real ads appear in the mobile app.</p><button class="btn ad-close">Close</button></div></div>
+  <div id="toast"></div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
